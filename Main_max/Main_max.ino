@@ -43,66 +43,18 @@ float Read_pression()
   Start_measure_pressure();
 
   /**
-     Lecture Pression
+     Lecture Pression et temperature
   */
   Wire.beginTransmission(I2C_ADDR);
   Wire.write(I2C_READ_PRESSURE_MSB);
   Wire.endTransmission();
 
-  Wire.requestFrom(I2C_ADDR, 2);
+  Wire.requestFrom(I2C_ADDR, 4);
   if (Wire.available()) {
-    Pressure_ADC = (((uint16_t)Wire.read() << 8) | Wire.read());
+    Pressure_ADC = (((uint16_t)Wire.read() << 8) | Wire.read()) >> 6;
+    Temperature_ADC = (((uint16_t)Wire.read() << 8) | Wire.read()) >> 6;
   }
-  /*
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(I2C_READ_PRESSURE_MSB);
-    Wire.endTransmission();
-
-    Wire.requestFrom(I2C_ADDR, 1);
-    if (Wire.available()) {
-      Pressure_ADC = Wire.read();
-      Pressure_ADC = Pressure_ADC << 8;
-    }
-
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(I2C_READ_PRESSURE_LSB);
-    Wire.endTransmission();
-
-    Wire.requestFrom(I2C_ADDR, 1);
-    if (Wire.available())
-      Pressure_ADC |= Wire.read();
-  */
-  /**
-     Lecture Temperature
-  */
-
-  Wire.beginTransmission(I2C_ADDR);
-  Wire.write(I2C_READ_TEMP_MSB);
-  Wire.endTransmission();
-
-  Wire.requestFrom(I2C_ADDR, 2);
-  if (Wire.available()) {
-    Temperature_ADC = (((uint16_t)Wire.read() << 8) | Wire.read());
-  }
-  /*
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(I2C_READ_TEMP_MSB);
-    Wire.endTransmission();
-
-    Wire.requestFrom(I2C_ADDR, 1);
-    if (Wire.available()) {
-      Temperature_ADC = Wire.read();
-      Temperature_ADC = Temperature_ADC << 8;
-    }
-
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(I2C_READ_TEMP_LSB);
-    Wire.endTransmission();
-
-    Wire.requestFrom(I2C_ADDR, 1);
-    if (Wire.available())
-      Temperature_ADC |= Wire.read();
-  */
+  
   Serial.println(" ADC Values : ");
   Serial.print("> Temp = "); Serial.println(Temperature_ADC);
   Serial.print("> Pressure = "); Serial.println(Pressure_ADC);
@@ -181,5 +133,5 @@ void Start_measure_pressure()
   Wire.beginTransmission(I2C_ADDR);
   Wire.write(I2C_START_CONVERT);
   Wire.endTransmission();
-  delay(50);
+  delay(100);
 }
