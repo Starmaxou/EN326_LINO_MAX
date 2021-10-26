@@ -14,7 +14,7 @@ float a0, b1, b2, c12;
 void setup()
 {
   Wire.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println(">>>> Wire Start!");
   Serial.println(">>>> Serial Start!");
 
@@ -48,13 +48,14 @@ float Read_pression()
   Wire.beginTransmission(I2C_ADDR);
   Wire.write(I2C_READ_PRESSURE_MSB);
   Wire.endTransmission();
+  
 
   Wire.requestFrom(I2C_ADDR, 4);
   if (Wire.available()) {
-    Pressure_ADC = (((uint16_t)Wire.read() << 8) | Wire.read()) >> 6;
-    Temperature_ADC = (((uint16_t)Wire.read() << 8) | Wire.read()) >> 6;
+    Pressure_ADC = (((uint16_t)Wire.read() << 2) | Wire.read());
+    Temperature_ADC = (((uint16_t)Wire.read() << 2) | Wire.read());
   }
-  
+    
   Serial.println(" ADC Values : ");
   Serial.print("> Temp = "); Serial.println(Temperature_ADC);
   Serial.print("> Pressure = "); Serial.println(Pressure_ADC);
@@ -63,7 +64,7 @@ float Read_pression()
      Calcul de la pression compenser
   */
   Pcomp = a0 + (b1 + c12 * Temperature_ADC) * Pressure_ADC + b2 * Temperature_ADC;
-  Pressure = (65 / 1023) * Pcomp + 50;
+  Pressure = (65.0F / 1023.0F) * Pcomp + 50.0F;
   return Pressure;
 }
 
@@ -104,8 +105,7 @@ void Read_coeff_pression()
   a0 = a0 / 8;
   b1 = b1 / 8192;
   b2 = b2 / 16384;
-  c12 = c12;
-  c12 /= 4194304.0;
+  c12 = c12 / 4194304.0;
 
   Serial.println("Coefficient reel : ");
   Serial.print("a0 = "); Serial.println(a0,DEC);
@@ -132,6 +132,7 @@ void Start_measure_pressure()
   Serial.println("// Start Measure pressure \\");
   Wire.beginTransmission(I2C_ADDR);
   Wire.write(I2C_START_CONVERT);
+  Wire.write(I2C_READ_PRESSURE_MSB);
   Wire.endTransmission();
-  delay(100);
+  delay(300);
 }
