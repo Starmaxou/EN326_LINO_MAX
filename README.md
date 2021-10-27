@@ -18,3 +18,6 @@ La partie émission est composé des capteurs suivant :
  - Capteur de pression Freescale MPL115A2 (donnant également une mesure de température)
  - Capteur d'humidité/température Sensiron SHT15 ou RHT03
 
+## 3 - Utilisation
+Le projet Main_project correspond à la partie emission avec les capteurs.
+La projet Main_recepteur correspond à la partie recepteur, interfacée avec Processing
