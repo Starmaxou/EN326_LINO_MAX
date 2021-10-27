@@ -6,7 +6,7 @@
 void setup()
 {
   Wire.begin();
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println(">>>> Wire Start!");
   Serial.println(">>>> Serial Start!");
 
