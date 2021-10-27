@@ -22,7 +22,9 @@ float CheckSigned(float value)
 */
 void Start_measure_pressure()
 {
+#if TRACE_DEBUG
   Serial.println("// Start Measure pressure \\");
+#endif
   Wire.beginTransmission(I2C_ADDR);
   Wire.write(I2C_START_CONVERT);
   Wire.write(I2C_READ_PRESSURE_MSB);
@@ -54,10 +56,12 @@ float Read_pression()
     Pressure_ADC = (((uint16_t)Wire.read() << 2) | Wire.read());
     Temperature_ADC = (((uint16_t)Wire.read() << 2) | Wire.read());
   }
-    
+  
+#if TRACE_DEBUG 
   Serial.println(" ADC Values : ");
   Serial.print("> Temp = "); Serial.println(Temperature_ADC);
   Serial.print("> Pressure = "); Serial.println(Pressure_ADC);
+#endif
 
   /**
      Calcul de la pression compenser

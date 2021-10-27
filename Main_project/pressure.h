@@ -10,6 +10,8 @@
 #define I2C_READ_TEMP_LSB 0x03
 #define I2C_READ_COEFF  0x04
 
+#define TRACE_DEBUG false
+
 void Read_coeff_pression();
 float Read_pression();
 
