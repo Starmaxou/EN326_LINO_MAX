@@ -20,11 +20,11 @@ void setup()
 
 void loop()
 {
-  float Pression = 0;
+  float Pression = 0.0;
   uint8_t temp;
   uint8_t humid;
 
-  Pression = Read_pression();
+  Read_pression(&Pression);
   uint8_t error = readTemp(&temp, &humid);
   uint16_t lum_data = readLum();
 
@@ -39,13 +39,19 @@ void loop()
   else
   {
     Serial.print("Curent humidity :");
-    Serial.println(humid);
+    Serial.print(humid); 
+    Serial.println(" "); //necessaire pour exctration des données sur Processing
+    
     Serial.print("Curent temperature :");
-    Serial.println(temp);
+    Serial.print(temp);
+    Serial.println(" "); //necessaire pour exctration des données sur Processing
   }
   Serial.print("Curent luminosity :");
-  Serial.println(lum_data);
+  Serial.print(lum_data);
+  Serial.println(" "); //necessaire pour exctration des données sur Processing
 
-  Serial.print("Curent Pressions :"); Serial.print(Pression); Serial.println(" kPa");
+  Serial.print("Curent pressions :"); 
+  Serial.print(Pression);
+  Serial.println(" "); //necessaire pour exctration des données sur Processing
   delay(1000);
 }

@@ -13,7 +13,7 @@
 #define TRACE_DEBUG false
 
 void Read_coeff_pression();
-float Read_pression();
+void Read_pression(float *pressure);
 
 
 #endif
