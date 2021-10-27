@@ -83,22 +83,35 @@ void draw()
       if(max[i] < input[i])
       {
         max[i] = input[i];
+        fill(255,255,255);
+        stroke(0,0,255);
+        rect(x_offset,y_offset+250*i+5,100,200);
+        stroke(180,180,180);
+        textAlign(RIGHT);
         for(int j = 0; j < 7; j++)
         {
           y_scale[i][j] = min[i]+(min[i]-max[i])/7*j;
+          text(y_scale[i][j],x_offset+100,y_offset+19+250*i+190/6*j);
         }
       }
       else if(min[i] > input[i])
       {
         min[i] = input[i];
+        fill(255,255,255);
+        stroke(0,0,255);
+        rect(x_offset,y_offset+250*i+5,100,200);
+        stroke(180,180,180);
+        textAlign(RIGHT);
         for(int j = 0; j < 7; j++)
         {
           y_scale[i][j] = min[i]+(min[i]-max[i])/7*j;
+          text(y_scale[i][j],x_offset+100,y_offset+19+250*i+190/6*j);
         }
       }
-      
+        input[0] = input[1] = input[2] = input[3] = input[0]+0.1;
     }
-    //delay(1000/refresh_rate);
+    
+    delay(100/refresh_rate);
   } 
 
 }
