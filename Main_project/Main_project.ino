@@ -20,32 +20,34 @@ void setup()
 
 void loop()
 {
-  float Pression = 0;
+  float Pression = 0.0;
   uint8_t temp;
   uint8_t humid;
 
-  Pression = Read_pression();
+  Read_pression(&Pression);
   uint8_t error = readTemp(&temp, &humid);
   uint16_t lum_data = readLum();
 
   /**
-   * Affichage des mesures
-   */
-  if(error != DHT_SUCCESS)
+     Affichage des mesures
+  */
+  if (error != DHT_SUCCESS)
   {
     Serial.print("Error using DHT11");
     Serial.println(error);
   }
   else
   {
-    Serial.print("Curent humidity :");
+    Serial.print("Humidity: ");
     Serial.println(humid);
-    Serial.print("Curent temperature :");
+
+    Serial.print("Temperature: ");
     Serial.println(temp);
   }
-  Serial.print("Curent luminosity :");
+  Serial.print("Luminosity: ");
   Serial.println(lum_data);
 
-  Serial.print("Curent Pressions :"); Serial.print(Pression); Serial.println(" kPa");
+  Serial.print("Pressions: ");
+  Serial.println(Pression);
   delay(1000);
 }

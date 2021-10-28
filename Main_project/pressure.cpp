@@ -35,12 +35,12 @@ void Start_measure_pressure()
 /*******************************************************
    Fonction de lecture et de calcul de la pression
 */
-float Read_pression()
+void Read_pression(float *pressure)
 {
   uint16_t Temperature_ADC = 0;
   uint16_t Pressure_ADC = 0;
-  float Pcomp, Pressure;
-
+  float Pcomp;
+  
   Start_measure_pressure();
 
   /**
@@ -67,8 +67,7 @@ float Read_pression()
      Calcul de la pression compenser
   */
   Pcomp = a0 + (b1 + c12 * Temperature_ADC) * Pressure_ADC + b2 * Temperature_ADC;
-  Pressure = (65.0F / 1023.0F) * Pcomp + 50.0F;
-  return Pressure;
+  *pressure = (65.0F / 1023.0F) * Pcomp + 50.0F;
 }
 
 /**********************************************
