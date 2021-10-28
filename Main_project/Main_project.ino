@@ -29,29 +29,25 @@ void loop()
   uint16_t lum_data = readLum();
 
   /**
-   * Affichage des mesures
-   */
-  if(error != DHT_SUCCESS)
+     Affichage des mesures
+  */
+  if (error != DHT_SUCCESS)
   {
     Serial.print("Error using DHT11");
     Serial.println(error);
   }
   else
   {
-    Serial.print("Curent humidity :");
-    Serial.print(humid); 
-    Serial.println(" "); //necessaire pour exctration des données sur Processing
-    
-    Serial.print("Curent temperature :");
-    Serial.print(temp);
-    Serial.println(" "); //necessaire pour exctration des données sur Processing
-  }
-  Serial.print("Curent luminosity :");
-  Serial.print(lum_data);
-  Serial.println(" "); //necessaire pour exctration des données sur Processing
+    Serial.print("Humidity: ");
+    Serial.println(humid);
 
-  Serial.print("Curent pressions :"); 
-  Serial.print(Pression);
-  Serial.println(" "); //necessaire pour exctration des données sur Processing
+    Serial.print("Temperature: ");
+    Serial.println(temp);
+  }
+  Serial.print("Luminosity: ");
+  Serial.println(lum_data);
+
+  Serial.print("Pressions: ");
+  Serial.println(Pression);
   delay(1000);
 }
