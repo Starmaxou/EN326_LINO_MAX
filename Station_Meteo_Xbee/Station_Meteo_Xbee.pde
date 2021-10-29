@@ -23,15 +23,17 @@ void setup()
   size(displayWidth, displayHeight);
   textSize(24);
 
-  input = new float[7];
+  input = new float[8];
   max = new float[4];
   min = new float[4];
   y_scale = new float[4][7];
   values = new float[4][max_points];
-  for(int i = 0 ; i < 7 ; i++)
-  input[i] = 1;
+  for (int i = 0; i < 7; i++)
+    input[i] = 1;
+  while ((input[4]!= 1.0) && (input[5]!= 1.0) && (input[6]!= 1.0) && (input[7]!= 1.0))
+    input = Read_data(input);
+  input[4] = input[5] = input[6] = input[7] = 0.0;
 
-  input = Read_data(input);
   for (int i = 0; i < 4; i++)
   {
     min[i] = max[i] = input[i];
@@ -42,8 +44,12 @@ void draw()
 {
   if (myPort.available() > 0)
   {
-    while(myPort.available() > 0)
-      input = Read_data(input);
+    while (myPort.available() > 0)
+    {
+      while ((input[4]!= 1.0) && (input[5]!= 1.0) && (input[6]!= 1.0) && (input[7]!= 1.0))
+        input = Read_data(input);
+      input[4] = input[5] = input[6] = input[7] = 0.0;
+    }
     background(100);
 
     for (int i = 0; i < 4; i++)
@@ -132,7 +138,7 @@ void draw()
       }
       values[i][0] = input[i];
     }
-    
+
     nb_points++;
     //delay(10/refresh_rate);
   }
@@ -143,7 +149,7 @@ void Init_serial() {
   // List all the available serial ports
   printArray(Serial.list());
   // Open the port you are using at the rate you want:
-  myPort = new Serial(this, Serial.list()[2], 9600);
+  myPort = new Serial(this, Serial.list()[0], 9600);
 }
 
 float[] Read_data(float[] mydata) {
@@ -165,15 +171,15 @@ float[] Read_data(float[] mydata) {
         }
         if (text.equals(text_pattern[1])) { //On test si le text reçu correspond à un des patternes.
           data[1] = Float.parseFloat(value);   //Conversion du string en float
-          data[4] = 1.0;
+          data[5] = 1.0;
         }
         if (text.equals(text_pattern[2])) { //On test si le text reçu correspond à un des patternes.
           data[2] = Float.parseFloat(value);    //Conversion du string en float
-          data[4] = 1.0;
+          data[6] = 1.0;
         }
         if (text.equals(text_pattern[3])) { //On test si le text reçu correspond à un des patternes.
           data[3] = Float.parseFloat(value); //Conversion du string en float
-          data[4] = 1.0;
+          data[7] = 1.0;
         }
       }
     }
