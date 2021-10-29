@@ -2,8 +2,8 @@
 import processing.serial.*;
 int temp, humid, lumi, press;
 Serial myPort;  // The serial port
-int display_time = 120; // seconds
-int refresh_rate = 10; // Hz
+int display_time = 240; // seconds
+int refresh_rate = 5; // Hz
 int x_offset = 200;
 int y_offset = 80;
 float[] input;
