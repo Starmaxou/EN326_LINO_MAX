@@ -23,13 +23,13 @@ void setup()
   size(displayWidth, displayHeight);
   textSize(24);
 
-  input = new float[5];
+  input = new float[7];
   max = new float[4];
   min = new float[4];
   y_scale = new float[4][7];
   values = new float[4][max_points];
-
-  input[0] = input[1] = input[2] = input[3] = input[4] = 1;
+  for(int i = 0 ; i < 7 ; i++)
+  input[i] = 1;
 
   input = Read_data(input);
   for (int i = 0; i < 4; i++)
@@ -161,7 +161,7 @@ float[] Read_data(float[] mydata) {
 
         if (text.equals(text_pattern[0])) { //On test si le text reçu correspond à un des patternes.
           data[0] = Float.parseFloat(value);  //Conversion du string en float
-          data[4] = 1.0;
+          data[4] = data[4];
         }
         if (text.equals(text_pattern[1])) { //On test si le text reçu correspond à un des patternes.
           data[1] = Float.parseFloat(value);   //Conversion du string en float
