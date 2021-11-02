@@ -90,7 +90,7 @@ void draw()
       fill(255, 255, 255);
       stroke(255, 255, 255);
       strokeWeight(2);
-      rect(x_offset-10, 250*i+y_offset, 1700, 235); //graph background
+      rect(x_offset-10, 250*i+y_offset, 1710, 235); //graph background
       rect(x_offset-190, y_offset+170+250*i, 170, 65); //"min max" background
 
       fill(0, 0, 0);
@@ -123,7 +123,7 @@ void draw()
     {
 
       min[i] = max[i] = values[i][0];
-      for (int j = 0; j < 7; j++)
+      for (int j = 0; j < max_points; j++)
       {
         if (max[i] < values[i][j])
         {
