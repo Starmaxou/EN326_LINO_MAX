@@ -21,3 +21,4 @@ La partie émission est composé des capteurs suivant :
 ## 3 - Utilisation
 Le projet Main_project correspond à la partie emission avec les capteurs.
 La projet Main_recepteur correspond à la partie recepteur, interfacée avec Processing
+L'interface processing est le projet Station_Meteo_Xbee_V2.
