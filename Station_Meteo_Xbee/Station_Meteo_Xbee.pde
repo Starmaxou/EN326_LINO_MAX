@@ -98,11 +98,17 @@ void draw()
         if (max[i] < values[i][j])
         {
           max[i] = values[i][j];
-          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
+          for (int k =0; k < max_points; k++)
+          {
+            y_scale[i][k] = min[i]-1+(max[i]+1-(min[i]-1))/7*k;
+          }
         } else if (min[i] > values[i][j])
         {
           min[i] = values[i][j];
-          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
+          for (int k =0; k < max_points; k++)
+          {
+            y_scale[i][k] = min[i]-1+(max[i]+1-(min[i]-1))/7*k;
+          }
         }
       }
 
