@@ -8,9 +8,9 @@ Elle sera composée d'une partie émission distante minue de différents capteur
 Le système devra être capable d'afficher sur l'écran de l'ordinateur mis à disposition les valeurs instantanées des capteurs embarqués.
 
 Les deux modules sont composés :
- - D'une carte Arduino UNO
- - D'un shield Wireless Proto
- - D'un module xBee
+ - D'une carte Arduino UNO,
+ - D'un shield Wireless Proto,
+ - D'un module xBee,
 
 ## 2 - Capteurs mis à disposition
 La partie émission est composé des capteurs suivant :
