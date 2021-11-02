@@ -10,6 +10,8 @@ int display_time = 60; // seconds
 int refresh_rate = 1; // Hz
 int x_offset = 200;
 int y_offset = 80;
+int width_graph = 1700;
+int height_graph = 235;
 String text_pattern[] = {"Humidity:", "Temperature:", "Luminosity:", "Pressions:"};
 float[] input;
 float[] max;
@@ -45,24 +47,24 @@ void setup()
   HygroGraph = Graph_meteo();
   HygroGraph.setData(x_scale, values[0]);
   HygroGraph.setXAxisLabel("Temps (s)");
-  HygroGraph.setLineColour(color(0,0,255));
- 
+  HygroGraph.setLineColour(color(0, 0, 255));
+
   TempGraph = Graph_meteo();
   TempGraph.setData(x_scale, values[1]);
   TempGraph.setXAxisLabel("Temps (s)");
-  TempGraph.setLineColour(color(255,0,0));
-  
+  TempGraph.setLineColour(color(255, 0, 0));
+
   LumGraph = Graph_meteo();
   LumGraph.setData(x_scale, values[2]);
   LumGraph.setXAxisLabel("Temps (s)");
   LumGraph.setLineColour(color(255, 255, 0));
-  
+
   PresGraph = Graph_meteo();
   PresGraph.setData(x_scale, values[3]);
   PresGraph.setXAxisLabel("Temps (s)");
 
   for (int i = 0; i < 7; i++)
-    input[i] = 1;
+    input[i] = 0.0;
   while ((input[4]!= 1.0) && (input[5]!= 1.0) && (input[6]!= 1.0) && (input[7]!= 1.0))
     input = Read_data(input);
   input[4] = input[5] = input[6] = input[7] = 0.0;
@@ -83,74 +85,81 @@ void draw()
         input = Read_data(input);
       input[4] = input[5] = input[6] = input[7] = 0.0;
     }
-    background(125);
-
-    for (int i = 0; i < 4; i++)
-    {
-      fill(255, 255, 255);
-      stroke(255, 255, 255);
-      strokeWeight(2);
-      rect(x_offset-10, 250*i+y_offset, 1710, 235); //graph background
-      rect(x_offset-190, y_offset+170+250*i, 170, 65); //"min max" background
-
-      fill(0, 0, 0);
-      textAlign(LEFT);
-      text("Max :", x_offset-180, y_offset+195+250*i);
-      text("Min :", x_offset-180, y_offset+225+250*i);
-    }
+    HygroGraph.setData(x_scale, values[0]);
+    TempGraph.setData(x_scale, values[1]);
+    LumGraph.setData(x_scale, values[2]);
+    PresGraph.setData(x_scale, values[3]);
     
+    nb_points = (nb_points < max_points) ? nb_points + 1 : nb_points;
+  }
+  background(125);
+
+  for (int i = 0; i < 4; i++)
+  {
+    fill(255, 255, 255);
+    stroke(255, 255, 255);
+    strokeWeight(2);
+    rect(x_offset-10, 250*i+y_offset, 1710, 235); //graph background
+    rect(x_offset-190, y_offset+170+250*i, 170, 65); //"min max" background
+
     fill(0, 0, 0);
     textAlign(LEFT);
-    text("Humidity (%)", x_offset-180, y_offset+30f);
-    text("Temperature (°C)", x_offset-180, y_offset+30+250);
-    text("Light (AU)", x_offset-180, y_offset+30+500);
-    text("Pressure (kPa)", x_offset-180, y_offset+30+750);
+    text("Max :", x_offset-180, y_offset+195+250*i);
+    text("Min :", x_offset-180, y_offset+225+250*i);
+  }
 
-    HygroGraph.setData(x_scale, values[0]);
-    HygroGraph.draw(x_offset, y_offset, 1700, 235);
+  fill(0, 0, 0);
+  textAlign(CENTER);
+  textSize(50);
+  text("Station Météo XBee - Lino & Maxime", displayWidth / 2, 50);
+  textSize(24);
 
-    TempGraph.setData(x_scale, values[1]);
-    TempGraph.draw(x_offset, 250*1+y_offset, 1700, 235);
+  fill(0, 0, 0);
+  textAlign(LEFT);
+  text("Humidity (%)", x_offset-180, y_offset+30f);
+  text("Temperature (°C)", x_offset-180, y_offset+30+250);
+  text("Light (AU)", x_offset-180, y_offset+30+500);
+  text("Pressure (kPa)", x_offset-180, y_offset+30+750);
 
-    LumGraph.setData(x_scale, values[2]);
-    LumGraph.draw(x_offset, 250*2+y_offset, 1700, 235);
+  HygroGraph.draw(x_offset, y_offset, width_graph, height_graph);
+  TempGraph.draw(x_offset, 250*1+y_offset, width_graph, height_graph);
+  LumGraph.draw(x_offset, 250*2+y_offset, width_graph, height_graph);
+  PresGraph.draw(x_offset, 250*3+y_offset, width_graph, height_graph);
 
-    PresGraph.setData(x_scale, values[3]);
-    PresGraph.draw(x_offset, 250*3+y_offset, 1700, 235);
+  for (int i = 0; i < 4; i++)
+  {
 
-
-    for (int i = 0; i < 4; i++)
+    min[i] = max[i] = values[i][0];
+    for (int j = 0; j < nb_points; j++)
     {
-
-      min[i] = max[i] = values[i][0];
-      for (int j = 0; j < max_points; j++)
+      if (max[i] < values[i][j])
       {
-        if (max[i] < values[i][j])
-        {
-          max[i] = values[i][j];
-        } else if (min[i] > values[i][j])
-        {
-          min[i] = values[i][j];
-        }
+        max[i] = values[i][j];
+      } else if (min[i] > values[i][j])
+      {
+        min[i] = values[i][j];
       }
-
-      fill(0, 0, 0);
-      textAlign(LEFT);
-      text(max[i], x_offset-100, y_offset+195+250*i);
-      text(min[i], x_offset-100, y_offset+225+250*i);
-
-      for (int j = max_points-1; j > 0; j--)
-        values[i][j] = values[i][j-1];
-
-      values[i][0] = input[i];
     }
 
-    nb_points++;
-    //delay(10/refresh_rate);
+    //Affichage des min/max
+    fill(0, 0, 0);
+    textAlign(LEFT);
+    text(max[i], x_offset-100, y_offset+195+250*i);
+    text(min[i], x_offset-100, y_offset+225+250*i);
+
+    //Décalage des valeurs pour faire avancer le graphique
+    for (int j = max_points-1; j > 0; j--)
+      values[i][j] = values[i][j-1];
+
+    values[i][0] = input[i];  //Sauvegarde des valeur (Input) dans le tableau des graphiques (values)
   }
+
+  delay(1000/refresh_rate);
 }
 
-//Constructeur de graph avec les bons paramètres
+/*
+ * Constructeur de graph avec les bons paramètres
+ */
 XYChart Graph_meteo()
 {
   XYChart mychart = new XYChart(this);
@@ -159,12 +168,12 @@ XYChart Graph_meteo()
   mychart.setMinY(0);
   mychart.setPointSize(0);
   mychart.setLineWidth(2);
-  
+
   mychart.setLineColour(54);
   mychart.setAxisColour(54);
   mychart.setAxisLabelColour(54);
   mychart.setAxisValuesColour(54);
-  
+
   return mychart;
 }
 
@@ -190,7 +199,7 @@ float[] Read_data(float[] mydata) {
 
         if (text.equals(text_pattern[0])) { //On test si le text reçu correspond à un des patternes.
           data[0] = Float.parseFloat(value);  //Conversion du string en float
-          data[4] = data[4];
+          data[4] = 1.0;
         }
         if (text.equals(text_pattern[1])) { //On test si le text reçu correspond à un des patternes.
           data[1] = Float.parseFloat(value);   //Conversion du string en float

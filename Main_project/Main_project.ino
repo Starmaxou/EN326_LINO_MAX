@@ -49,5 +49,5 @@ void loop()
 
   Serial.print("Pressions: ");
   Serial.println(Pression);
-  delay(500);
+  delay(100);
 }
