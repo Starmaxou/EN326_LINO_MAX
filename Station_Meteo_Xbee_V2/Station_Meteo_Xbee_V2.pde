@@ -122,12 +122,16 @@ void draw()
     for (int i = 0; i < 4; i++)
     {
 
-      if (max[i] < input[i])
+      min[i] = max[i] = values[i][0];
+      for (int j = 0; j < 7; j++)
       {
-        max[i] = input[i];
-      } else if (min[i] > input[i])
-      {
-        min[i] = input[i];
+        if (max[i] < values[i][j])
+        {
+          max[i] = values[i][j];
+        } else if (min[i] > values[i][j])
+        {
+          min[i] = values[i][j];
+        }
       }
 
       fill(0, 0, 0);
