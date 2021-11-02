@@ -209,9 +209,3 @@ float[] Read_data(float[] mydata) {
   }
   return data;
 }
-
-/*void Serial_event(Serial p)
- {
- Serial_flag = true;
- input = Read_data( input );
- }*/
