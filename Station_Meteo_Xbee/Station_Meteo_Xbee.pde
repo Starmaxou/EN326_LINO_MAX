@@ -4,7 +4,7 @@ import processing.serial.*;
 Serial myPort;  // The serial port
 boolean Serial_flag = false;
 int display_time = 60; // seconds
-int refresh_rate = 1; // Hz
+int refresh_rate = 2; // Hz
 int x_offset = 200;
 int y_offset = 80;
 String text_pattern[] = {"Humidity:", "Temperature:", "Luminosity:", "Pressions:"};
@@ -34,6 +34,8 @@ void setup()
     input = Read_data(input);
   input[4] = input[5] = input[6] = input[7] = 0.0;
 
+  input[0] = input[1] = input[2] = input[3] = input[4] = 1;
+
   for (int i = 0; i < 4; i++)
   {
     min[i] = max[i] = input[i];
@@ -42,19 +44,14 @@ void setup()
 
 void draw()
 {
-  if (myPort.available() > 0)
+  if (Serial_flag)
   {
-    while (myPort.available() > 0)
-    {
-      while ((input[4]!= 1.0) && (input[5]!= 1.0) && (input[6]!= 1.0) && (input[7]!= 1.0))
-        input = Read_data(input);
-      input[4] = input[5] = input[6] = input[7] = 0.0;
-    }
+    Serial_flag = false;
+
     background(100);
 
     for (int i = 0; i < 4; i++)
     {
-
       fill(255, 255, 255);
       stroke(255, 255, 255);
       strokeWeight(2);
@@ -83,7 +80,6 @@ void draw()
       strokeWeight(1);
       for (int j = 0; j < 7; j++)
       {
-
         line(x_offset+100, y_offset+19+250*i+(190/6)*j, x_offset+1640, y_offset+19+250*i+(190/6)*j);
       }
       strokeWeight(2);
@@ -96,22 +92,20 @@ void draw()
     text("Pressure (kPa)", x_offset-175, y_offset+30+750);
     for (int i = 0; i < 4; i++)
     {
-
-      if (max[i] < input[i])
+      min[i] = max[i] = values[i][0];
+      for (int j = 0; j < 7; j++)
       {
-        max[i] = input[i];
-        for (int j = 0; j < 7; j++)
+        if (max[i] < values[i][j])
         {
-          y_scale[i][j] = min[i]+(max[i]-min[i])/6*j;
-        }
-      } else if (min[i] > input[i])
-      {
-        min[i] = input[i];
-        for (int j = 0; j < 7; j++)
+          max[i] = values[i][j];
+          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
+        } else if (min[i] > values[i][j])
         {
-          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/6*j;
+          min[i] = values[i][j];
+          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
         }
       }
+
       fill(0, 0, 0);
       textAlign(LEFT);
       text(max[i], x_offset-100, y_offset+195+250*i);
@@ -127,9 +121,15 @@ void draw()
       stroke(255, 0, 0);
       for (int j = 1; j < max_points; j++)
       {
-        float y = 190-values[i][j]/(max[i]+1-(min[i]-1))*186;
-        float y1 = 190-values[i][j-1]/(max[i]+1-(min[i]-1))*186;
-        line(x_offset+100+1500/float(max_points)*j, y_offset+15+y+250*i, x_offset+100+1500/float(max_points)*(j-1), y_offset+15+y1+250*i);
+        if (values[i][j] >= min[i] && values[i][j] <= max[i])
+        {
+          float y = 190-map(values[i][j], min[i]-1, max[i]+1, 0, 186);
+          float y1 = 190-map(values[i][j-1], min[i]-1, max[i]+1, 0, 186);
+          println("value :" + values[i][j]);
+          println("max :" + max[i]);
+          println("min :" + min[1]);
+          line(x_offset+100+1500/float(max_points)*j, y_offset+15+y+250*i, x_offset+100+1500/float(max_points)*(j-1), y_offset+15+y1+250*i);
+        }
       }
 
       for (int j = max_points-1; j > 0; j--)
@@ -187,8 +187,9 @@ float[] Read_data(float[] mydata) {
   return data;
 }
 
-/*void Serial_event(Serial p)
- {
- Serial_flag = true;
- input = Read_data( input );
- }*/
+void serialEvent(Serial p)
+{
+  input = Read_data(input);
+  Serial_flag = true;
+  println(Serial_flag);
+}
