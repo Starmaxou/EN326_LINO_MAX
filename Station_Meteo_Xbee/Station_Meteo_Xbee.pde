@@ -42,7 +42,7 @@ void draw()
   {
     Serial_flag = false;
     background(100);
-  
+
     for (int i = 0; i < 4; i++)
     {
       fill(255, 255, 255);
@@ -92,8 +92,7 @@ void draw()
         {
           max[i] = values[i][j];
           y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
-        }
-        else if (min[i] > values[i][j])
+        } else if (min[i] > values[i][j])
         {
           min[i] = values[i][j];
           y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
@@ -115,11 +114,15 @@ void draw()
       stroke(255, 0, 0);
       for (int j = 1; j < max_points; j++)
       {
-        float y = 190-map(values[i][j],min[i]-1,max[i]+1,0,186);
-        float y1 = 190-map(values[i][j-1],min[i]-1,max[i]+1,0,186);
-        println(max[i]+1-(min[i]-1));
-        println(values[i][j]);
-        line(x_offset+100+1500/float(max_points)*j, y_offset+15+y+250*i, x_offset+100+1500/float(max_points)*(j-1), y_offset+15+y1+250*i);
+        if (values[i][j] >= min[i] && values[i][j] <= max[i])
+        {
+          float y = 190-map(values[i][j], min[i]-1, max[i]+1, 0, 186);
+          float y1 = 190-map(values[i][j-1], min[i]-1, max[i]+1, 0, 186);
+          println("value :" + values[i][j]);
+          println("max :" + max[i]);
+          println("min :" + min[1]);
+          line(x_offset+100+1500/float(max_points)*j, y_offset+15+y+250*i, x_offset+100+1500/float(max_points)*(j-1), y_offset+15+y1+250*i);
+        }
       }
 
       for (int j = max_points-1; j > 0; j--)
