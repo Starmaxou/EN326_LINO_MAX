@@ -1,10 +1,13 @@
 import java.util.*;
 import processing.serial.*;
+import org.gicentre.utils.stat.*;        // For chart classes.
+import org.gicentre.utils.colour.*;        // For colour classes.
+import org.gicentre.utils.colour.ColourTable;
 
 Serial myPort;  // The serial port
 boolean Serial_flag = false;
 int display_time = 60; // seconds
-int refresh_rate = 2; // Hz
+int refresh_rate = 1; // Hz
 int x_offset = 200;
 int y_offset = 80;
 String text_pattern[] = {"Humidity:", "Temperature:", "Luminosity:", "Pressions:"};
@@ -15,6 +18,13 @@ float[][] y_scale;
 float[][] values;
 int nb_points = 0;
 int max_points = display_time*refresh_rate;
+
+float[] x_scale = new float[max_points];
+
+XYChart HygroGraph;
+XYChart TempGraph;
+XYChart LumGraph;
+XYChart PresGraph;
 
 void setup()
 {
@@ -28,13 +38,34 @@ void setup()
   min = new float[4];
   y_scale = new float[4][7];
   values = new float[4][max_points];
+
+  for (int i = 0; i < max_points; i++)
+    x_scale[i] = i;
+
+  HygroGraph = Graph_meteo();
+  HygroGraph.setData(x_scale, values[0]);
+  HygroGraph.setXAxisLabel("Temps (s)");
+  HygroGraph.setLineColour(color(0,0,255));
+ 
+  TempGraph = Graph_meteo();
+  TempGraph.setData(x_scale, values[1]);
+  TempGraph.setXAxisLabel("Temps (s)");
+  TempGraph.setLineColour(color(255,0,0));
+  
+  LumGraph = Graph_meteo();
+  LumGraph.setData(x_scale, values[2]);
+  LumGraph.setXAxisLabel("Temps (s)");
+  LumGraph.setLineColour(color(255, 255, 0));
+  
+  PresGraph = Graph_meteo();
+  PresGraph.setData(x_scale, values[3]);
+  PresGraph.setXAxisLabel("Temps (s)");
+
   for (int i = 0; i < 7; i++)
     input[i] = 1;
   while ((input[4]!= 1.0) && (input[5]!= 1.0) && (input[6]!= 1.0) && (input[7]!= 1.0))
     input = Read_data(input);
   input[4] = input[5] = input[6] = input[7] = 0.0;
-
-  input[0] = input[1] = input[2] = input[3] = input[4] = 1;
 
   for (int i = 0; i < 4; i++)
   {
@@ -44,98 +75,69 @@ void setup()
 
 void draw()
 {
-  if (Serial_flag)
+  if (myPort.available() > 0)
   {
-    Serial_flag = false;
-
-    background(100);
+    while (myPort.available() > 0)
+    {
+      while ((input[4]!= 1.0) && (input[5]!= 1.0) && (input[6]!= 1.0) && (input[7]!= 1.0))
+        input = Read_data(input);
+      input[4] = input[5] = input[6] = input[7] = 0.0;
+    }
+    background(125);
 
     for (int i = 0; i < 4; i++)
     {
       fill(255, 255, 255);
       stroke(255, 255, 255);
       strokeWeight(2);
-      rect(x_offset, 250*i+y_offset, 1700, 235);
-      rect(x_offset-180, y_offset+250*i, 180, 40);
-      rect(x_offset-180, y_offset+170+250*i, 170, 65);
-      stroke(180, 180, 180);
-      line(x_offset+100, y_offset+205+250*i, x_offset+1640, y_offset+205+250*i);
-      line(x_offset+100, y_offset+15+250*i, x_offset+100, y_offset+205+250*i);
-      triangle(x_offset+1640, y_offset+200+250*i, x_offset+1640, y_offset+210+250*i, x_offset+1650, y_offset+205+250*i);
-      triangle(x_offset+95, y_offset+15+250*i, x_offset+105, y_offset+15+250*i, x_offset+100, y_offset+5+250*i);
-      fill(180, 180, 180);
-      textAlign(CENTER);
-      text("time (t)", x_offset+1660, y_offset+230+250*i);
+      rect(x_offset-10, 250*i+y_offset, 1700, 235); //graph background
+      rect(x_offset-190, y_offset+170+250*i, 170, 65); //"min max" background
+
+      fill(0, 0, 0);
       textAlign(LEFT);
-      text("Max :", x_offset-170, y_offset+195+250*i);
-      text("Min :", x_offset-170, y_offset+225+250*i);
-      textAlign(CENTER);
-      for (int j = 0; j < 16; j++)
-      {
-        strokeWeight(1);
-        line(x_offset+100+100*j, y_offset+205+250*i, x_offset+100+100*j, y_offset+15+250*i);
-        strokeWeight(2);
-        text((j)*(display_time/15), x_offset+100+100*j, y_offset+225+250*i);
-      }
-      strokeWeight(1);
-      for (int j = 0; j < 7; j++)
-      {
-        line(x_offset+100, y_offset+19+250*i+(190/6)*j, x_offset+1640, y_offset+19+250*i+(190/6)*j);
-      }
-      strokeWeight(2);
+      text("Max :", x_offset-180, y_offset+195+250*i);
+      text("Min :", x_offset-180, y_offset+225+250*i);
     }
+    
     fill(0, 0, 0);
     textAlign(LEFT);
-    text("Humidity (%)", x_offset-175, y_offset+30f);
-    text("Temperature (°C)", x_offset-175, y_offset+30+250);
-    text("Light (AU)", x_offset-175, y_offset+30+500);
-    text("Pressure (kPa)", x_offset-175, y_offset+30+750);
+    text("Humidity (%)", x_offset-180, y_offset+30f);
+    text("Temperature (°C)", x_offset-180, y_offset+30+250);
+    text("Light (AU)", x_offset-180, y_offset+30+500);
+    text("Pressure (kPa)", x_offset-180, y_offset+30+750);
+
+    HygroGraph.setData(x_scale, values[0]);
+    HygroGraph.draw(x_offset, y_offset, 1700, 235);
+
+    TempGraph.setData(x_scale, values[1]);
+    TempGraph.draw(x_offset, 250*1+y_offset, 1700, 235);
+
+    LumGraph.setData(x_scale, values[2]);
+    LumGraph.draw(x_offset, 250*2+y_offset, 1700, 235);
+
+    PresGraph.setData(x_scale, values[3]);
+    PresGraph.draw(x_offset, 250*3+y_offset, 1700, 235);
+
+
     for (int i = 0; i < 4; i++)
     {
-      min[i] = max[i] = values[i][0];
-      for (int j = 0; j < 7; j++)
+
+      if (max[i] < input[i])
       {
-        if (max[i] < values[i][j])
-        {
-          max[i] = values[i][j];
-          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
-        } else if (min[i] > values[i][j])
-        {
-          min[i] = values[i][j];
-          y_scale[i][j] = min[i]-1+(max[i]+1-(min[i]-1))/7*j;
-        }
+        max[i] = input[i];
+      } else if (min[i] > input[i])
+      {
+        min[i] = input[i];
       }
 
       fill(0, 0, 0);
       textAlign(LEFT);
       text(max[i], x_offset-100, y_offset+195+250*i);
       text(min[i], x_offset-100, y_offset+225+250*i);
-      textAlign(RIGHT);
-      fill(180, 180, 180);
-      for (int j = 0; j < 7; j++)
-      {
-        text(y_scale[i][j], x_offset+90, y_offset+19+250*i+190-190/6*j);
-        text(y_scale[i][j], x_offset+90, y_offset+19+250*i+190-190/6*j);
-      }
-      strokeWeight(1);
-      stroke(255, 0, 0);
-      for (int j = 1; j < max_points; j++)
-      {
-        if (values[i][j] >= min[i] && values[i][j] <= max[i])
-        {
-          float y = 190-map(values[i][j], min[i]-1, max[i]+1, 0, 186);
-          float y1 = 190-map(values[i][j-1], min[i]-1, max[i]+1, 0, 186);
-          println("value :" + values[i][j]);
-          println("max :" + max[i]);
-          println("min :" + min[1]);
-          line(x_offset+100+1500/float(max_points)*j, y_offset+15+y+250*i, x_offset+100+1500/float(max_points)*(j-1), y_offset+15+y1+250*i);
-        }
-      }
 
       for (int j = max_points-1; j > 0; j--)
-      {
         values[i][j] = values[i][j-1];
-      }
+
       values[i][0] = input[i];
     }
 
@@ -144,6 +146,23 @@ void draw()
   }
 }
 
+//Constructeur de graph avec les bons paramètres
+XYChart Graph_meteo()
+{
+  XYChart mychart = new XYChart(this);
+  mychart.showXAxis(true);
+  mychart.showYAxis(true);
+  mychart.setMinY(0);
+  mychart.setPointSize(0);
+  mychart.setLineWidth(2);
+  
+  mychart.setLineColour(54);
+  mychart.setAxisColour(54);
+  mychart.setAxisLabelColour(54);
+  mychart.setAxisValuesColour(54);
+  
+  return mychart;
+}
 
 void Init_serial() {
   // List all the available serial ports
@@ -187,9 +206,8 @@ float[] Read_data(float[] mydata) {
   return data;
 }
 
-void serialEvent(Serial p)
-{
-  input = Read_data(input);
-  Serial_flag = true;
-  println(Serial_flag);
-}
+/*void Serial_event(Serial p)
+ {
+ Serial_flag = true;
+ input = Read_data( input );
+ }*/
