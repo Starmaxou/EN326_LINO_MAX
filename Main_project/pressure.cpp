@@ -104,9 +104,9 @@ void Read_coeff_pression()
   b2 = CheckSigned((float)_b2);
   c12 = CheckSigned((float)_c12);
   
-  a0 = a0 / 8;
-  b1 = b1 / 8192;
-  b2 = b2 / 16384;
+  a0 = a0 / 8;            //a0 / 2^(1/(-3))
+  b1 = b1 / 8192;         //b1 / 2^(1/(-13))
+  b2 = b2 / 16384;        //b2 / 2^(1/(-3))
   c12 = c12 / 4194304.0;
 
   Serial.println("Coefficient reel : ");
